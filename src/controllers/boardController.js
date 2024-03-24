@@ -4,7 +4,7 @@ import { boardService } from '~/services/boardService'
 
 const createNew = async (req, res, next) => {
   try {
-    console.log('req.body in Controller', req.body)
+    // console.log('req.body in Controller', req.body)
     // throw new ApiError(StatusCodes.BAD_GATEWAY, 'cc gi do')
     const createBoard = await boardService.createNew(req.body)
     res.status(StatusCodes.CREATED).json(createBoard)
