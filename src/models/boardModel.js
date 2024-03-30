@@ -24,6 +24,9 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
+//Hạn chế không cho 1 số field được quyền thay đổi (vì mongoDB quá flexible nên phải rào)
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
+
 const validateBeforeCreate = async (data) => {
   return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
@@ -68,9 +71,46 @@ const getDetails = async (id) => {
       } }
     ]).toArray()
 
-    return result[0] || {}
+    return result[0] || null
   } catch (error) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Boards not found!')
+  }
+}
+
+const pushColumnOrderIds = async (column) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(column.boardId) },
+      { $push: { columnOrderIds: new ObjectId(column._id) } },
+      { returnDocument: 'after' }
+    )
+
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const update = async (boardId, updateData) => {
+  try {
+    //filter và delete toàn bộ những field bị hạn chế update
+    Object.keys(updateData).forEach(fieldName => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName))
+        delete updateData[fieldName]
+    })
+
+    //Convert _id trong columnOrderIds thành ObjectId
+    if (updateData.columnOrderIds) updateData.columnOrderIds = updateData.columnOrderIds.map(_id => (new ObjectId(_id)))
+
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(boardId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    )
+
+    return result
+  } catch (error) {
+    throw new Error(error)
   }
 }
 
@@ -79,5 +119,7 @@ export const boardModel = {
   BOARD_COLLECTION_SCHEMA,
   createNew,
   findOneById,
-  getDetails
+  getDetails,
+  pushColumnOrderIds,
+  update
 }
