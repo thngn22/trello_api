@@ -5,7 +5,6 @@ import { cardModel } from '~/models/cardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
 import { cloneDeep } from 'lodash'
-import { ObjectId } from 'mongodb'
 
 const createNew = async (reqBody) => {
   try {
