@@ -21,13 +21,30 @@ class boardRepo extends BaseRepository {
     })
   }
 
-  getBoardById = async ({
-    id
-  }) => {
-    return await this.findById(id)
+  getDetail = async (boardId) => {
+    const result = await this.model.aggregate([
+      { $match: {
+        _id: new mongoose.Types.ObjectId(boardId),
+        _destroy: false
+      } },
+      { $lookup: {
+        from: 'columns',
+        localField: '_id',
+        foreignField: 'boardId',
+        as: 'columns'
+      } },
+      { $lookup: {
+        from: 'cards',
+        localField: '_id',
+        foreignField: 'boardId',
+        as: 'cards'
+      } }
+    ])
+
+    return result[0] || null
   }
 
-  findOneAndUpdateCardOrderIds = async ({
+  findOneAndUpdateColumnOrderIds = async ({
     boardId,
     columnId
   }) => {
