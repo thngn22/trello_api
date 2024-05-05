@@ -1,41 +1,26 @@
-import express from 'express'
-import exithook from 'async-exit-hook'
-import cors from 'cors'
-import { corsOptions } from '~/config/cors'
-import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb'
-import { env } from '~/config/environment'
-import { APIs_V1 } from './routes/v1'
-import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
+const express = require('express')
+const cors = require('cors')
+const { corsOptions } = require('~/config/cors')
+require('~/config/init.mongodb')
+const env = require('~/config/environment')
+const httpRequestMiddleware = require('~/middlewares/httpRequest.middleware')
+const APIs_V2 = require('~/routes/v2')
+const { handleError, handleNotFound } = require('~/middlewares/handleError.middleware')
 
-const START_SERVER = () => {
-  const app = express()
 
-  app.use(cors(corsOptions))
+const app = express()
 
-  //Enable json data
-  app.use(express.json())
+app.use(cors(corsOptions))
 
-  app.use('/v1', APIs_V1)
+//Enable json data
+app.use(express.json())
 
-  //Xử lý lỗi tập trung - error Handling tại đây
-  app.use(errorHandlingMiddleware)
+app.use(httpRequestMiddleware({ responseFormatter: true }))
+app.use('/v2', APIs_V2)
+app.use(handleNotFound)
+app.use(handleError)
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
+app.listen(env.APP_PORT, env.APP_HOST, () => {
   // eslint-disable-next-line no-console
-    console.log(`Hello ${ env.AUTHOR }, I am running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
-  })
-
-  exithook(() => {
-    CLOSE_DB()
-  })
-}
-
-(async () => {
-  try {
-    await CONNECT_DB()
-    START_SERVER()
-  } catch (error) {
-    // console.log(error)
-    process.exit(0)
-  }
-})()
+  console.log(`Hello ${ env.AUTHOR }, I am running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
+})
