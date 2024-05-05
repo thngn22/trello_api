@@ -1,6 +1,6 @@
-import 'dotenv/config'
+require('dotenv/config')
 
-export const env ={
+const env = {
   MONGODB_URI: process.env.MONGODB_URI,
   DATABASE_NAME: process.env.DATABASE_NAME,
 
@@ -10,3 +10,5 @@ export const env ={
 
   AUTHOR: process.env.AUTHOR
 }
+
+module.exports = env
