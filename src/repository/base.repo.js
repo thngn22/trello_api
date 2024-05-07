@@ -90,7 +90,7 @@ class Repository {
 
   findOneAndUpdate = async (filter, object) => {
     return await this.model.findOneAndUpdate(filter, object, {
-      upsert: true,
+      // upsert: true,
       new: true
     })
   }

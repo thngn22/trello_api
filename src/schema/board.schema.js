@@ -22,7 +22,22 @@ const update = joi.object().keys({
   )
 })
 
+const moveCardToDifferentColumn = joi.object().keys({
+  currentCardId: joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+
+  prevColumnId: joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+  prevCardOrderIds: joi.array().required().items(
+    joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  ),
+
+  nextColumnId: joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+  nextCardOrderIds: joi.array().required().items(
+    joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  )
+})
+
 module.exports = {
   createBoard,
-  update
+  update,
+  moveCardToDifferentColumn
 }

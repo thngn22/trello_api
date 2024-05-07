@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes')
+const { default: mongoose } = require('mongoose')
 const { cardRepo, columnRepo, boardRepo } = require('~/repository')
 const ApiError = require('~/utils/ApiError')
 
