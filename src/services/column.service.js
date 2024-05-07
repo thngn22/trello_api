@@ -1,4 +1,5 @@
 const { StatusCodes } = require('http-status-codes')
+const mongoose = require('mongoose')
 const { columnRepo, boardRepo } = require('~/repository')
 const ApiError = require('~/utils/ApiError')
 
@@ -21,6 +22,20 @@ class ColumnService {
     }) || (() => {throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant update Column into Board')})
 
     return newColumn
+  }
+
+  static update = async (columnId, reqBody) => {
+    const validColumn = await columnRepo.findById(columnId)
+    if (!validColumn)
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Not found Column!!!')
+
+    const result = await columnRepo.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(columnId) },
+      reqBody
+    )
+    if (!result) throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant update Column!!!')
+
+    return result
   }
 }
 

@@ -13,11 +13,11 @@ const createBoard = joi.object().keys({
   type: boardType.required()
 })
 
-const update = joi.object.keys({
+const update = joi.object().keys({
   title: boardTitle,
   description: boardDescription,
   type: boardType,
-  columnOrderIds: joi.array.items(
+  columnOrderIds: joi.array().items(
     joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
   )
 })

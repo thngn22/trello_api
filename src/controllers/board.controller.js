@@ -12,7 +12,7 @@ class BoardController {
 
   update = async (req, res) => {
     const boardId = req.params.id
-    res.sendData(await BoardService.update(boardId))
+    res.sendData(await BoardService.update(boardId, req.body))
   }
 }
 

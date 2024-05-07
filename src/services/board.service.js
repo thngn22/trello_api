@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes')
 const { boardRepo } = require('~/repository')
 const ApiError = require('~/utils/ApiError')
 const { cloneDeep } = require('lodash')
+const mongoose = require('mongoose')
 
 class BoardService {
   static createBoard = async ({
@@ -29,9 +30,18 @@ class BoardService {
     return reqBoard
   }
 
-  static update = async (boardId) => {
-    await boardRepo.findById(boardId) || (() => { throw new ApiError(StatusCodes.NOT_FOUND, 'Not found Board!!!')})
-    return 'tim thay'
+  static update = async (boardId, reqBody) => {
+    const validBoard = await boardRepo.findById(boardId)
+    if (!validBoard)
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Not found Board!!!')
+
+    const result = await boardRepo.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(boardId) },
+      reqBody
+    )
+    if (!result) throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant update Board!!!')
+
+    return result
   }
 }
 
