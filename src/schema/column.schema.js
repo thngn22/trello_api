@@ -10,6 +10,14 @@ const createColumn = joi.object().keys({
   title: columnTitle.required()
 })
 
+const update = joi.object().keys({
+  title: columnTitle,
+  cardOrderIds: joi.array().items(
+    joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  )
+})
+
 module.exports = {
-  createColumn
+  createColumn,
+  update
 }

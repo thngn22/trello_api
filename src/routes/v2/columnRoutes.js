@@ -13,4 +13,10 @@ columnRoutes.route('/')
   }),
   asyncHandler(columnController.createColumn))
 
+columnRoutes.route('/:id')
+  .put(validator({
+    body: column.update
+  }),
+  asyncHandler(columnController.update))
+
 module.exports = columnRoutes

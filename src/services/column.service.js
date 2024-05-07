@@ -1,6 +1,7 @@
 const { StatusCodes } = require('http-status-codes')
+const mongoose = require('mongoose')
 const { columnRepo, boardRepo } = require('~/repository')
-const { default: ApiError } = require('~/utils/ApiError')
+const ApiError = require('~/utils/ApiError')
 
 class ColumnService {
   static createColumn = async ({
@@ -15,12 +16,22 @@ class ColumnService {
       title
     }) || (() => {throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant create Column')})
 
-    await boardRepo.findOneAndUpdateCardOrderIds({
+    await boardRepo.findOneAndUpdateColumnOrderIds({
       boardId: newColumn.boardId,
       columnId: newColumn._id
     }) || (() => {throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant update Column into Board')})
 
     return newColumn
+  }
+
+  static update = async (columnId, reqBody) => {
+    const result = await columnRepo.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(columnId) },
+      reqBody
+    )
+    if (!result) throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant update Column!!!')
+
+    return result
   }
 }
 
