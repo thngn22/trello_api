@@ -1,6 +1,7 @@
 const joi = require('joi')
 const { id } = require('./common.schema')
 const { BOARD_TYPE } = require('~/utils/constants')
+const { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } = require('~/utils/validators')
 
 const boardTitle = joi.string()
 const boardDescription = joi.string()
@@ -12,6 +13,16 @@ const createBoard = joi.object().keys({
   type: boardType.required()
 })
 
+const update = joi.object.keys({
+  title: boardTitle,
+  description: boardDescription,
+  type: boardType,
+  columnOrderIds: joi.array.items(
+    joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+  )
+})
+
 module.exports = {
-  createBoard
+  createBoard,
+  update
 }

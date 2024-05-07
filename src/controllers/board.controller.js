@@ -9,6 +9,11 @@ class BoardController {
     const boardId = req.params.id
     res.sendData(await BoardService.getDetails(boardId))
   }
+
+  update = async (req, res) => {
+    const boardId = req.params.id
+    res.sendData(await BoardService.update(boardId))
+  }
 }
 
 module.exports = new BoardController()

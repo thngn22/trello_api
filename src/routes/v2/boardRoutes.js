@@ -15,5 +15,9 @@ boardRoutes.route('/')
 
 boardRoutes.route('/:id')
   .get(asyncHandler(boardController.getDetails))
+  .put(validator({
+    body: board.update
+  }),
+  asyncHandler(boardController.update))
 
 module.exports = boardRoutes

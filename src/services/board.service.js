@@ -28,6 +28,11 @@ class BoardService {
 
     return reqBoard
   }
+
+  static update = async (boardId) => {
+    await boardRepo.findById(boardId) || (() => { throw new ApiError(StatusCodes.NOT_FOUND, 'Not found Board!!!')})
+    return 'tim thay'
+  }
 }
 
 module.exports = BoardService
