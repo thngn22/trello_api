@@ -14,6 +14,10 @@ class BoardController {
     const boardId = req.params.id
     res.sendData(await BoardService.update(boardId, req.body))
   }
+
+  moveCardToDifferentColumn = async (req, res) => {
+    res.sendData(await BoardService.moveCardToDifferentColumn(req.body))
+  }
 }
 
 module.exports = new BoardController()

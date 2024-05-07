@@ -1,5 +1,5 @@
 const { StatusCodes } = require('http-status-codes')
-const { boardRepo } = require('~/repository')
+const { boardRepo, columnRepo, cardRepo } = require('~/repository')
 const ApiError = require('~/utils/ApiError')
 const { cloneDeep } = require('lodash')
 const mongoose = require('mongoose')
@@ -31,10 +31,6 @@ class BoardService {
   }
 
   static update = async (boardId, reqBody) => {
-    const validBoard = await boardRepo.findById(boardId)
-    if (!validBoard)
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Not found Board!!!')
-
     const result = await boardRepo.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(boardId) },
       reqBody
@@ -42,6 +38,23 @@ class BoardService {
     if (!result) throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Cant update Board!!!')
 
     return result
+  }
+
+  static moveCardToDifferentColumn = async (reqBody) => {
+    const prevColumn = await columnRepo.update(reqBody.prevColumnId,
+      { cardOrderIds: reqBody.prevCardOrderIds = reqBody.prevCardOrderIds.map(_id => new mongoose.Types.ObjectId(_id)) }
+    )
+    if (!prevColumn) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cant update prevColumn!')
+
+    const nextColumn = await columnRepo.update(reqBody.nextColumnId,
+      { cardOrderIds: reqBody.nextCardOrderIds = reqBody.nextCardOrderIds.map(_id => new mongoose.Types.ObjectId(_id)) }
+    )
+    if (!nextColumn) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cant update nextColumn!')
+
+    const currentCardId = await cardRepo.update(reqBody.currentCardId, { columnId: reqBody.nextColumnId })
+    if (!currentCardId) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cant update currentCard!')
+
+    return { updateResult: 'Successfully!!!' }
   }
 }
 

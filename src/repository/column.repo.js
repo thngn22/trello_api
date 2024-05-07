@@ -29,6 +29,22 @@ class columnRepo extends BaseRepository {
       { new: true }
     )
   }
+
+  update = async (
+    columnId,
+    updateData
+  ) => {
+    const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
+    Object.keys(updateData).forEach(fieldName => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName))
+        delete updateData[fieldName]
+    })
+
+    return await this.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(columnId) },
+      updateData
+    )
+  }
 }
 
 module.exports = new columnRepo()

@@ -25,10 +25,6 @@ class ColumnService {
   }
 
   static update = async (columnId, reqBody) => {
-    const validColumn = await columnRepo.findById(columnId)
-    if (!validColumn)
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Not found Column!!!')
-
     const result = await columnRepo.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(columnId) },
       reqBody

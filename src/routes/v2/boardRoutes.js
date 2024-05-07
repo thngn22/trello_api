@@ -20,4 +20,10 @@ boardRoutes.route('/:id')
   }),
   asyncHandler(boardController.update))
 
+boardRoutes.route('/supports/moving_card')
+  .put(validator({
+    body: board.moveCardToDifferentColumn
+  }),
+  asyncHandler(boardController.moveCardToDifferentColumn))
+
 module.exports = boardRoutes
